@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import AdminPanel from '../components/AdminPanel';
-import PlayerPanel from '../components/PlayerPanel';
 import WaitingRoom from '../components/WaitingRoom';
 import QuizGame from '../components/QuizGame';
 import Leaderboard from '../components/Leaderboard';
