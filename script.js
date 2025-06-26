@@ -1,4 +1,3 @@
-
 // Firebase configuration (you'll need to replace with your actual config)
 const firebaseConfig = {
     // Replace with your Firebase config
@@ -50,21 +49,31 @@ function generateSessionId() {
 }
 
 function showScreen(screenId) {
+    console.log('Switching to screen:', screenId);
     document.querySelectorAll('.screen').forEach(screen => {
         screen.classList.remove('active');
     });
-    document.getElementById(screenId).classList.add('active');
+    const targetScreen = document.getElementById(screenId);
+    if (targetScreen) {
+        targetScreen.classList.add('active');
+    } else {
+        console.error('Screen not found:', screenId);
+    }
 }
 
 function showError(elementId, message) {
     const errorElement = document.getElementById(elementId);
-    errorElement.textContent = message;
-    errorElement.classList.remove('hidden');
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+    }
 }
 
 function hideError(elementId) {
     const errorElement = document.getElementById(elementId);
-    errorElement.classList.add('hidden');
+    if (errorElement) {
+        errorElement.classList.add('hidden');
+    }
 }
 
 // Firebase/LocalStorage data functions
@@ -206,13 +215,22 @@ function isAnswerCorrect(question, answer) {
 
 // Event handlers
 function handleSetupChoice() {
-    document.getElementById('admin-btn').addEventListener('click', () => {
-        showScreen('admin-setup-screen');
-    });
+    const adminBtn = document.getElementById('admin-btn');
+    const playerBtn = document.getElementById('player-btn');
+    
+    if (adminBtn) {
+        adminBtn.addEventListener('click', () => {
+            console.log('Admin button clicked');
+            showScreen('admin-setup-screen');
+        });
+    }
 
-    document.getElementById('player-btn').addEventListener('click', () => {
-        showScreen('player-setup-screen');
-    });
+    if (playerBtn) {
+        playerBtn.addEventListener('click', () => {
+            console.log('Player button clicked');
+            showScreen('player-setup-screen');
+        });
+    }
 }
 
 function handleAdminSetup() {
@@ -854,19 +872,27 @@ function toggleDetailedView() {
 
 // Initialize the application
 function initApp() {
+    console.log('Initializing app...');
+    
     // Setup initial event listeners
     handleSetupChoice();
     handleAdminSetup();
     handlePlayerSetup();
     
     // Setup submit answer button
-    document.getElementById('submit-answer-btn').addEventListener('click', submitAnswer);
+    const submitBtn = document.getElementById('submit-answer-btn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', submitAnswer);
+    }
     
     console.log('Quiz app initialized');
 }
 
 // Start the app when DOM is loaded
-document.addEventListener('DOMContentLoaded', initApp);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing app...');
+    initApp();
+});
 
 // Cleanup listeners when page unloads
 window.addEventListener('beforeunload', () => {
