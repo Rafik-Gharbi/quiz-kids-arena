@@ -1,24 +1,254 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>quiz-kids-arena</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Training Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-book-open"></i>
+                    <h1>Web Training Quiz</h1>
+                </div>
+                <p class="subtitle">Test your HTML, CSS, and JavaScript knowledge!</p>
+            </div>
+        </header>
 
-    <meta property="og:title" content="quiz-kids-arena" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Setup Screen -->
+            <div id="setup-screen" class="screen active">
+                <div class="card">
+                    <h2>Choose Your Role</h2>
+                    <div class="button-group">
+                        <button id="admin-btn" class="btn btn-primary">
+                            <i class="fas fa-users"></i>
+                            I'm the Instructor (Admin)
+                        </button>
+                        <button id="player-btn" class="btn btn-success">
+                            <i class="fas fa-trophy"></i>
+                            I'm a Student (Player)
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
+            <!-- Admin Setup Screen -->
+            <div id="admin-setup-screen" class="screen">
+                <div class="card wide">
+                    <h2>Admin Setup</h2>
+                    <div class="form-group">
+                        <label for="quiz-json">Paste your quiz JSON data:</label>
+                        <textarea id="quiz-json" placeholder='{"sections": [{"name": "HTML", "questions": [{"question": "What does HTML stand for?", "type": "single", "options": ["HyperText Markup Language", "Home Tool Markup Language"], "correct": 0, "timeLimit": 30}]}]}'></textarea>
+                        <div id="json-error" class="error hidden"></div>
+                    </div>
+                    <button id="create-session-btn" class="btn btn-primary">Create Quiz Session</button>
+                </div>
+            </div>
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+            <!-- Player Setup Screen -->
+            <div id="player-setup-screen" class="screen">
+                <div class="card">
+                    <h2>Join Quiz</h2>
+                    <div class="form-group">
+                        <label for="session-code">Session Code:</label>
+                        <input type="text" id="session-code" placeholder="Enter session code" maxlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="player-name">Your Name:</label>
+                        <input type="text" id="player-name" placeholder="Enter your name">
+                    </div>
+                    <button id="join-quiz-btn" class="btn btn-success">Join Quiz</button>
+                </div>
+            </div>
+
+            <!-- Admin Panel Screen -->
+            <div id="admin-panel-screen" class="screen">
+                <div class="admin-panel">
+                    <div class="session-info card">
+                        <div class="session-header">
+                            <h2>Admin Panel</h2>
+                            <div class="session-code-display">
+                                <span>Session Code:</span>
+                                <div class="code-container">
+                                    <span id="display-session-code" class="session-code"></span>
+                                    <button id="copy-code-btn" class="btn-icon">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="quiz-stats">
+                            <div class="stat-item">
+                                <div class="stat-number" id="sections-count">0</div>
+                                <div class="stat-label">Sections</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="questions-count">0</div>
+                                <div class="stat-label">Questions</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="players-count">0</div>
+                                <div class="stat-label">Players</div>
+                            </div>
+                        </div>
+
+                        <div class="quiz-sections" id="quiz-sections"></div>
+                    </div>
+
+                    <div class="players-panel card">
+                        <h3><i class="fas fa-users"></i> Connected Players</h3>
+                        <div id="players-list" class="players-list"></div>
+                    </div>
+
+                    <div class="start-panel card">
+                        <button id="start-game-btn" class="btn btn-success btn-large">
+                            <i class="fas fa-play"></i>
+                            Start Quiz
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waiting Room Screen -->
+            <div id="waiting-room-screen" class="screen">
+                <div class="card">
+                    <div class="waiting-content">
+                        <div class="waiting-icon">
+                            <i class="fas fa-clock pulse"></i>
+                        </div>
+                        <h2>Waiting Room</h2>
+                        <p>Get ready for the quiz!</p>
+                        
+                        <div class="waiting-info">
+                            <div class="info-item">
+                                <div class="connection-status">
+                                    <i id="connection-icon" class="fas fa-wifi"></i>
+                                    <span id="connection-text">Connecting...</span>
+                                </div>
+                                <div class="session-display">Session: <span id="waiting-session-code"></span></div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="welcome-msg">Welcome!</div>
+                                <div id="player-name-display" class="player-name"></div>
+                            </div>
+                            
+                            <div class="info-item">
+                                <div class="players-connected">
+                                    <i class="fas fa-users"></i>
+                                    <span>Players Connected</span>
+                                </div>
+                                <div id="connected-count" class="count">0</div>
+                            </div>
+                            
+                            <div class="info-item waiting-msg">
+                                <div>⏳ Waiting for instructor to start the quiz</div>
+                                <div>Make sure you're ready to answer questions!</div>
+                            </div>
+                        </div>
+
+                        <div class="bounce-icon">🎯</div>
+                        <p class="small-text">The quiz will start automatically when the instructor begins</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quiz Game Screen -->
+            <div id="quiz-game-screen" class="screen">
+                <div class="card wide">
+                    <div class="quiz-header">
+                        <div class="section-badge" id="current-section"></div>
+                        <div class="timer-display">
+                            <i class="fas fa-clock"></i>
+                            <span id="time-left">60</span>s
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-info">
+                            <span>Question <span id="current-question-num">1</span> of <span id="total-questions">1</span></span>
+                            <span><span id="progress-percent">0</span>% Complete</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill"></div>
+                        </div>
+                        <div class="time-bar">
+                            <div id="time-fill" class="time-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="question-section">
+                        <h2 id="question-text" class="question-text"></h2>
+                        <div id="answer-options" class="answer-options"></div>
+                    </div>
+
+                    <div class="submit-section">
+                        <button id="submit-answer-btn" class="btn btn-success">Submit Answer</button>
+                        <div id="answer-submitted" class="answer-submitted hidden">
+                            <i class="fas fa-check-circle"></i>
+                            Answer Submitted!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard Screen -->
+            <div id="leaderboard-screen" class="screen">
+                <div class="leaderboard-container">
+                    <div class="card">
+                        <div class="leaderboard-header">
+                            <div class="trophy-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <h2>Quiz Complete!</h2>
+                            <p>Here are the final results</p>
+                        </div>
+
+                        <div class="leaderboard-controls">
+                            <div class="section-filters" id="section-filters"></div>
+                            <div class="view-controls">
+                                <button id="toggle-detailed-btn" class="btn btn-outline">
+                                    <i class="fas fa-filter"></i>
+                                    Detailed View
+                                </button>
+                                <button id="new-quiz-btn" class="btn btn-outline admin-only hidden">
+                                    <i class="fas fa-redo"></i>
+                                    New Quiz
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="leaderboard-title">
+                            <i class="fas fa-users"></i>
+                            <h3 id="leaderboard-title">Overall Leaderboard</h3>
+                        </div>
+                        <div id="leaderboard-list" class="leaderboard-list"></div>
+                    </div>
+
+                    <div id="section-performance" class="card admin-only hidden">
+                        <h3>Section Performance</h3>
+                        <div id="section-stats" class="section-stats"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+    
+    <script src="script.js"></script>
+</body>
 </html>
