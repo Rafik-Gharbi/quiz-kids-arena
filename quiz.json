@@ -1,0 +1,27 @@
+{
+  "sections": [
+    {
+      "name": "HTML",
+      "questions": [
+        {
+          "question": "What does HTML stand for?",
+          "type": "single",
+          "options": ["Hyper Text Markup Language", "High Text Markdown Language", "Home Tool Markup Language"],
+          "correct": [0],
+          "timeLimit": 30
+        }
+      ]
+    },
+    {
+      "name": "CSS",
+      "questions": [
+        {
+          "question": "Which is NOT a valid CSS unit?",
+          "type": "single",
+          "options": ["px", "em", "cm", "km"],
+          "correct": [3]
+        }
+      ]
+    }
+  ]
+}

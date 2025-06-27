@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web Training Quiz</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/esm/index.js",
+          "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.esm.min.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <div class="logo">
+            <i class="fas fa-book-open"></i>
+            <h1>Interactive Quiz App</h1>
+          </div>
+          <p class="subtitle">
+            Challenge yourself with fun and educational quizzes!
+          </p>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Admin Setup Screen -->
+        <div id="admin-setup-screen" class="screen active">
+          <div class="card wide">
+            <h2>Admin Setup</h2>
+            <div class="form-group">
+              <label for="quiz-json">
+                Upload/Paste your quiz JSON data:
+                <button
+                  id="popoverJsonInfo"
+                  type="button"
+                  class="btn btn-link p-0 ms-1"
+                  tabindex="0"
+                  data-bs-toggle="popover"
+                  data-bs-trigger="focus"
+                  title="Quiz JSON Format"
+                >
+                  <i class="fas fa-info-circle"></i>
+                </button>
+              </label>
+              <input
+                type="file"
+                id="quiz-json-file"
+                accept=".json,application/json"
+                class="form-control mb-2"
+              />
+              <textarea
+                id="quiz-json"
+                placeholder='{"sections": [{"name": "HTML", "questions": [{"question": "What does HTML stand for?", "type": "single", "options": ["HyperText Markup Language", "Home Tool Markup Language"], "correct": 0, "timeLimit": 30}]}]}'
+              ></textarea>
+              <div id="json-error" class="error hidden"></div>
+            </div>
+            <button id="create-session-btn" class="btn btn-primary">
+              Create Quiz Session
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Panel Screen -->
+        <div id="admin-panel-screen" class="screen">
+          <div class="admin-panel">
+            <div class="session-info card">
+              <div class="session-header">
+                <h2>Admin Panel</h2>
+                <div class="session-code-display">
+                  <span>Session Code:</span>
+                  <div class="code-container">
+                    <span id="display-session-code" class="session-code"></span>
+                    <button id="copy-code-btn" class="btn-icon">
+                      <i class="fas fa-copy"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="quiz-stats">
+                <div class="stat-item">
+                  <div class="stat-number" id="sections-count">0</div>
+                  <div class="stat-label">Sections</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number" id="questions-count">0</div>
+                  <div class="stat-label">Questions</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number" id="players-count">0</div>
+                  <div class="stat-label">Players</div>
+                </div>
+              </div>
+
+              <div class="quiz-sections" id="quiz-sections"></div>
+            </div>
+
+            <div class="players-panel card">
+              <h3 class="mb-3">
+                <i class="fas fa-users"></i> Connected Players
+              </h3>
+              <div id="players-list" class="players-list"></div>
+            </div>
+
+            <div class="start-panel card">
+              <button id="start-game-btn" class="btn btn-success btn-large">
+                <i class="fas fa-play"></i>
+                Start Quiz
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Leaderboard Screen -->
+        <div id="progress-leaderboard-screen" class="screen">
+          <div class="card">
+            <h2><i class="fas fa-chart-line"></i> Player Progress</h2>
+            <div class="admin-stats my-3 row justify-content-center">
+              <div class="stat-item col-3 mx-2">
+                <span class="stat-label">Total Players:</span>
+                <span id="total-players-count">0</span>
+              </div>
+              <div class="stat-item col-3 mx-2">
+                <span class="stat-label">Players Finished:</span>
+                <span id="players-finished-count">0</span>
+              </div>
+              <div class="stat-item col-3 mx-2">
+                <span class="stat-label">Total Questions:</span>
+                <span id="admin-total-questions">0</span>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-striped align-middle">
+                <thead>
+                  <tr>
+                    <th>Player</th>
+                    <th>Current Question</th>
+                    <th>Progress</th>
+                  </tr>
+                </thead>
+                <tbody id="progress-leaderboard-body">
+                  <!-- Rows will be dynamically populated -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboard-screen" class="screen">
+          <div class="leaderboard-container">
+            <div class="card">
+              <div class="leaderboard-header">
+                <div class="trophy-icon">
+                  <i class="fas fa-trophy"></i>
+                </div>
+                <h2>Quiz Complete!</h2>
+                <p>Here are the final results</p>
+              </div>
+
+              <div class="leaderboard-controls">
+                <div class="section-filters" id="section-filters"></div>
+                <div class="view-controls">
+                  <button id="new-quiz-btn" class="btn btn-outline">
+                    <i class="fas fa-redo"></i>
+                    New Quiz
+                  </button>
+                </div>
+              </div>
+
+              <div id="section-performance" class="mt-3">
+                <h3>Final Leaderboard</h3>
+                <div
+                  id="section-stats"
+                  class="section-stats justify-content-center"
+                ></div>
+                <div
+                  id="detailed-leaderboard"
+                  class="detailed-leaderboard"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+    <script type="module" src="app.js"></script>
+    <script type="module" src="script-admin.js"></script>
+  </body>
+</html>
