@@ -9,6 +9,7 @@ import {
   appState,
   listenToData,
   showScreen,
+  sanitizeKey,
 } from "./app.js";
 
 // Quiz logic functions
@@ -338,11 +339,13 @@ function summarizeQuizResult() {
     sectionStats.innerHTML = "";
     appState.quizData.sections.forEach((section) => {
       const bestScore = Math.max(
-        ...playersList.map((p) => p.scores[section.name] || 0)
+        ...playersList.map((p) => p.scores[sanitizeKey(section.name)] || 0)
       );
       const avgScore =
-        playersList.reduce((sum, p) => sum + (p.scores[section.name] || 0), 0) /
-        playersList.length;
+        playersList.reduce(
+          (sum, p) => sum + (p.scores[sanitizeKey(section.name)] || 0),
+          0
+        ) / playersList.length;
       const div = document.createElement("div");
       div.className = "section-stat";
       div.innerHTML = `
@@ -420,6 +423,7 @@ function updateDetailedLeaderboard(section) {
 
   playersList.forEach((player, index) => {
     const position = index + 1;
+    console.log("Player", player.name, "Score", player.totalScore);
     const score =
       section === "overall"
         ? player.totalScore || 0
@@ -522,7 +526,6 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     ],
   };
-  const formattedJson = JSON.stringify(jsonExample, null, 2);
   const popover = new bootstrap.Popover(popoverTriggerEl, {
     html: true,
     sanitize: false,

@@ -4,6 +4,7 @@ import {
   appState,
   listenToData,
   showScreen,
+  sanitizeKey,
 } from "./app.js";
 
 function getAllQuestions(quizData) {
@@ -237,11 +238,16 @@ async function showPlayerResults() {
     appState.playerAnswers
   );
 
+  const sanitizedScores = {};
+  Object.entries(scores).forEach(([section, score]) => {
+    sanitizedScores[sanitizeKey(section)] = score;
+  });
+
   // Update player data in database
   const playerData = await readData(
     `sessions/${appState.sessionId}/players/${appState.playerId}`
   );
-  playerData.scores = scores;
+  playerData.scores = sanitizedScores;
   playerData.totalScore = totalScore;
   playerData.isFinished = true;
   writeData(
@@ -345,10 +351,17 @@ function displayAnswerOptions(question) {
     question.options.forEach((option, index) => {
       const optionDiv = document.createElement("div");
       optionDiv.className = "answer-option";
-      optionDiv.innerHTML = `
-                <div class="option-indicator"></div>
-                <div class="option-text">${option}</div>
-            `;
+
+      const indicatorDiv = document.createElement("div");
+      indicatorDiv.className = "option-indicator";
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "option-text";
+      textDiv.textContent = option;
+
+      optionDiv.appendChild(indicatorDiv);
+      optionDiv.appendChild(textDiv);
+
       optionDiv.addEventListener("click", () => selectSingleAnswer(index));
       optionsContainer.appendChild(optionDiv);
     });
@@ -356,10 +369,17 @@ function displayAnswerOptions(question) {
     question.options.forEach((option, index) => {
       const optionDiv = document.createElement("div");
       optionDiv.className = "answer-option";
-      optionDiv.innerHTML = `
-                <div class="option-indicator square"></div>
-                <div class="option-text">${option}</div>
-            `;
+
+      const indicatorDiv = document.createElement("div");
+      indicatorDiv.className = "option-indicator square";
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "option-text";
+      textDiv.textContent = option;
+
+      optionDiv.appendChild(indicatorDiv);
+      optionDiv.appendChild(textDiv);
+
       optionDiv.addEventListener("click", () => selectMultipleAnswer(index));
       optionsContainer.appendChild(optionDiv);
     });

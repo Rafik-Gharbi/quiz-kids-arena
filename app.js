@@ -125,3 +125,14 @@ export function listenToData(path, callback) {
   });
   appState.listeners.push(() => ref.off());
 }
+
+// Sanitize section names for Firebase keys
+export const sanitizeKey = (key) =>
+  key
+    .replace(/\./g, "_")
+    .replace(/#/g, "_")
+    .replace(/\$/g, "_")
+    .replace(/\[/g, "_")
+    .replace(/\]/g, "_")
+    .replace(/\//g, "_")
+    .replace(/^$/, "section");
